@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Kajukart Admin Panel</title>
+
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Lucide (icons) -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .modal { display: none; position: fixed; z-index:1000; left:0; top:0; width:100%; height:100%; background: rgba(0,0,0,.5); align-items:center; justify-content:center; }
+        .modal-content { background:#fff; padding:24px; border-radius:12px; max-width:500px; margin:auto; box-shadow:0 10px 25px rgba(0,0,0,.2); text-align:center; }
+        .tab-button.active { border-bottom: 3px solid #f97316; font-weight: 600; color: #f97316; }
+        .card-header { cursor: pointer; transition: background-color 0.2s; }
+        .card-header:hover { background-color: #f3f4f6; }
+        .order-status-pending { background-color: #fffbeb; color: #d97706; }
+        .order-status-processing { background-color: #eff6ff; color: #2563eb; }
+        .order-status-shipped { background-color: #f0fdf4; color: #16a34a; }
+        .order-status-delivered { background-color: #d1fae5; color: #059669; }
+    </style>
+</head>
+<body class="bg-gray-50">
+
+    <!-- Header -->
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="#" class="text-3xl font-bold text-orange-600">Kajukart Admin</a>
+            <div id="auth-status" class="text-gray-600">Checking status...</div>
+        </nav>
+        <div id="tab-navigation" class="container mx-auto px-6 flex border-b">
+            <button id="tab-products" onclick="showTab('products')" class="tab-button px-4 py-3 text-lg text-gray-500 active">Product Management</button>
+            <button id="tab-orders" onclick="showTab('orders')" class="tab-button px-4 py-3 text-lg text-gray-500">Order Management</button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-6 py-10">
+
+        <!-- Login / Access Denied -->
+        <section id="auth-gate" class="text-center py-20 hidden">
+            <h2 class="text-3xl font-bold text-red-500 mb-4">Access Denied</h2>
+            <p class="text-lg text-gray-600 mb-8">You must be logged in with a Google account to access the admin panel.</p>
+            <button onclick="signInWithGoogle()" class="bg-orange-600 text-white font-semibold px-8 py-3 rounded-lg shadow-lg hover:bg-orange-700">
+                Login with Google
+            </button>
+        </section>
+
+        <!-- Admin Content -->
+        <div id="admin-content" class="hidden">
+            
+            <!-- ---------------------------------------------------- -->
+            <!-- TAB 1: PRODUCT MANAGEMENT -->
+            <!-- ---------------------------------------------------- -->
+            <section id="products-tab" class="space-y-10">
+                <h2 class="text-3xl font-bold text-gray-800 mb-6">Product Management</h2>
+                
+                <!-- Add/Edit Product Form -->
+                <div class="bg-white p-8 rounded-lg shadow-lg">
+                    <h3 class="text-2xl font-semibold text-gray-800 mb-6" id="form-title">Add New Product</h3>
+                    <form id="productForm" onsubmit="event.preventDefault(); saveProduct()">
+                        <input type="hidden" id="productId" value="">
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
+                            <div>
+                                <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Product Name</label>
+                                <input type="text" id="name" required class="w-full p-2 border border-gray-300 rounded-lg">
+                            </div>
+                            <div>
+                                <label for="price" class="block text-sm font-medium text-gray-700 mb-1">Price (₹)</label>
+                                <input type="number" id="price" required min="1" step="any" class="w-full p-2 border border-gray-300 rounded-lg">
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="description" class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                            <textarea id="description" rows="3" required class="w-full p-2 border border-gray-300 rounded-lg resize-none"></textarea>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                            <div>
+                                <label for="stock" class="block text-sm font-medium text-gray-700 mb-1">Stock Quantity</label>
+                                <input type="number" id="stock" required min="0" class="w-full p-2 border border-gray-300 rounded-lg">
+                            </div>
+                            <div>
+                                <label for="imageUrl" class="block text-sm font-medium text-gray-700 mb-1">Image URL</label>
+                                <input type="url" id="imageUrl" placeholder="e.g. https://placehold.co/400x300" class="w-full p-2 border border-gray-300 rounded-lg">
+                            </div>
+                        </div>
+
+                        <div class="flex space-x-4">
+                            <button type="submit" class="bg-orange-600 text-white font-semibold px-6 py-2 rounded-lg shadow-md hover:bg-orange-700" id="save-button">
+                                Save Product
+                            </button>
+                            <button type="button" onclick="clearForm()" class="bg-gray-300 text-gray-800 font-semibold px-6 py-2 rounded-lg hover:bg-gray-400">
+                                Clear Form
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Product List -->
+                <div class="bg-white p-8 rounded-lg shadow-lg">
+                    <h3 class="text-2xl font-semibold text-gray-800 mb-6">Manage Existing Products</h3>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead>
+                                <tr class="bg-gray-50">
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stock</th>
+                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200" id="productList">
+                                <!-- Products injected here -->
+                                <tr><td colspan="4" class="py-4 text-center text-gray-500">Loading products...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- ---------------------------------------------------- -->
+            <!-- TAB 2: ORDER MANAGEMENT (NEW SECTION) -->
+            <!-- ---------------------------------------------------- -->
+            <section id="orders-tab" class="space-y-8 hidden">
+                <h2 class="text-3xl font-bold text-gray-800 mb-6">Order Management</h2>
+                
+                <div class="bg-white p-6 rounded-lg shadow-lg">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">Pending Orders</h3>
+                    <div id="ordersList" class="space-y-4">
+                        <p class="text-gray-500">Loading orders...</p>
+                        <!-- Orders injected here -->
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Modal -->
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeModal()">&times;</span>
+            <h3 id="modal-title" class="text-2xl font-bold mb-4">Modal Title</h3>
+            <p id="modal-message">This is the modal message.</p>
+            <button onclick="closeModal()" class="mt-6 bg-orange-600 text-white px-5 py-2 rounded-lg">OK</button>
+        </div>
+    </div>
+
+
+    <!-- Main script (module) -->
+    <script type="module">
+        /*************************************************************************
+         * admin.html main logic
+         *************************************************************************/
+        import {
+            GoogleAuthProvider,
+            signInWithPopup,
+            signOut,
+            onAuthStateChanged,
+            setPersistence,
+            browserLocalPersistence
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+
+        import {
+            doc,
+            setDoc,
+            getDoc,
+            onSnapshot,
+            deleteDoc,
+            updateDoc,
+            collection,
+            query,
+            getDocs,
+            addDoc // Add addDoc for new order creation if needed, though index.html does this
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        import {
+            auth,
+            db,
+            publicDataCollection,
+            appId,
+            initializeAuth,
+            signInAnonymously
+        } from "./firebase-config.js";
+
+        // ---- State & Utils ----
+        let currentUserId = null;
+
+        window.showModal = (title, message) => {
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('modal-message').innerHTML = message;
+            document.getElementById('myModal').style.display = 'flex';
+        };
+        window.closeModal = () => {
+            document.getElementById('myModal').style.display = 'none';
+        };
+
+        // --- Auth Gate ---
+        (async function mainInit() {
+            try {
+                // Ensure persistence is set for admin login
+                await setPersistence(auth, browserLocalPersistence);
+                await initializeAuth(); 
+                
+                onAuthStateChanged(auth, (user) => {
+                    const authGate = document.getElementById('auth-gate');
+                    const adminContent = document.getElementById('admin-content');
+                    const authStatus = document.getElementById('auth-status');
+
+                    if (user && !user.isAnonymous) {
+                        // Admin is logged in (using Google)
+                        currentUserId = user.uid;
+                        authGate.classList.add('hidden');
+                        adminContent.classList.remove('hidden');
+                        authStatus.innerHTML = `Hi, ${user.displayName} (<span class="font-mono text-xs">${user.uid.substring(0, 8)}...</span>) <button onclick="signOutUser()" class="text-red-500 hover:text-red-700 ml-2">Sign Out</button>`;
+                        
+                        // Load initial data for the default tab
+                        loadProducts();
+                        loadOrders(); // NEW: Load orders on login
+
+                    } else {
+                        // User is anonymous or logged out
+                        currentUserId = null;
+                        authGate.classList.remove('hidden');
+                        adminContent.classList.add('hidden');
+                        authStatus.innerText = 'Signed Out';
+                    }
+                    lucide.createIcons();
+                });
+
+            } catch (error) {
+                console.error("Firebase Initialization Error:", error);
+                showModal("Error", "Could not connect to the database. " + error.message);
+            }
+        })();
+
+        window.signInWithGoogle = async () => {
+            const provider = new GoogleAuthProvider();
+            try {
+                await signInWithPopup(auth, provider);
+            } catch (error) {
+                console.error("Google Sign-In Error:", error);
+                showModal("Login Failed", "Could not sign in. Did you authorize this domain in Firebase?");
+            }
+        };
+
+        window.signOutUser = async () => {
+            try {
+                await signOut(auth);
+            } catch (error) {
+                console.error("Sign Out Error:", error);
+            }
+        };
+
+        // ---- Tab Management ----
+        let currentTab = 'products';
+        window.showTab = (tabName) => {
+            currentTab = tabName;
+            document.getElementById('products-tab').classList.add('hidden');
+            document.getElementById('orders-tab').classList.add('hidden');
+            
+            document.getElementById('tab-products').classList.remove('active');
+            document.getElementById('tab-orders').classList.remove('active');
+
+            if (tabName === 'products') {
+                document.getElementById('products-tab').classList.remove('hidden');
+                document.getElementById('tab-products').classList.add('active');
+            } else if (tabName === 'orders') {
+                document.getElementById('orders-tab').classList.remove('hidden');
+                document.getElementById('tab-orders').classList.add('active');
+            }
+        };
+
+
+        // ==========================================================
+        // PRODUCT CRUD FUNCTIONS
+        // ==========================================================
+
+        window.saveProduct = async () => {
+            if (!currentUserId) return;
+            
+            const productId = document.getElementById('productId').value;
+            const name = document.getElementById('name').value;
+            const price = parseFloat(document.getElementById('price').value);
+            const stock = parseInt(document.getElementById('stock').value);
+            const imageUrl = document.getElementById('imageUrl').value;
+            const description = document.getElementById('description').value;
+
+            if (!name || isNaN(price) || isNaN(stock) || !description) {
+                showModal("Validation Error", "Please fill all mandatory fields.");
+                return;
+            }
+
+            const productData = { name, price, stock, imageUrl, description };
+
+            try {
+                if (productId) {
+                    // Update existing product
+                    const docRef = doc(publicDataCollection, productId);
+                    await updateDoc(docRef, productData);
+                    showModal("Success", `Product **${name}** updated successfully!`);
+                } else {
+                    // Add new product
+                    await setDoc(doc(publicDataCollection, Date.now().toString()), productData);
+                    showModal("Success", `Product **${name}** added successfully!`);
+                }
+                clearForm();
+            } catch (error) {
+                console.error("Error saving product:", error);
+                showModal("Error", "Could not save product. Check console for details.");
+            }
+        };
+
+        function loadProducts() {
+            const productList = document.getElementById('productList');
+            
+            onSnapshot(query(publicDataCollection), (snapshot) => {
+                productList.innerHTML = '';
+                if (snapshot.empty) {
+                    productList.innerHTML = `<tr><td colspan="4" class="py-4 text-center text-gray-500">No products found in database.</td></tr>`;
+                    return;
+                }
+                
+                snapshot.forEach(doc => {
+                    const product = doc.data();
+                    const id = doc.id;
+                    productList.innerHTML += `
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${product.name}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">₹${product.price.toFixed(2)}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${product.stock}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
+                                <button onclick="editProduct('${id}', '${escapeHtml(product.name)}', ${product.price}, ${product.stock}, '${escapeHtml(product.imageUrl || '')}', '${escapeHtml(product.description)}')" class="text-indigo-600 hover:text-indigo-900">Edit</button>
+                                <button onclick="deleteProduct('${id}', '${escapeHtml(product.name)}')" class="text-red-600 hover:text-red-900">Delete</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            }, (error) => {
+                console.error("Error loading products:", error);
+                productList.innerHTML = `<tr><td colspan="4" class="py-4 text-center text-red-500">Error loading products.</td></tr>`;
+            });
+        }
+
+        window.editProduct = (id, name, price, stock, imageUrl, description) => {
+            document.getElementById('productId').value = id;
+            document.getElementById('name').value = name;
+            document.getElementById('price').value = price;
+            document.getElementById('stock').value = stock;
+            document.getElementById('imageUrl').value = imageUrl;
+            document.getElementById('description').value = description;
+            document.getElementById('form-title').innerText = `Editing: ${name}`;
+            window.scrollTo(0, 0);
+        };
+
+        window.deleteProduct = async (id, name) => {
+            if (!confirm(`Are you sure you want to delete product: ${name}?`)) return; // Using custom modal in real app
+
+            try {
+                await deleteDoc(doc(publicDataCollection, id));
+                showModal("Success", `Product **${name}** deleted.`);
+            } catch (error) {
+                console.error("Error deleting product:", error);
+                showModal("Error", "Could not delete product. Check console.");
+            }
+        };
+
+        function clearForm() {
+            document.getElementById('productForm').reset();
+            document.getElementById('productId').value = '';
+            document.getElementById('form-title').innerText = 'Add New Product';
+        }
+        
+        function escapeHtml(str = '') {
+            return String(str).replace(/[&<>"']/g, function (s) {
+                const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+                return map[s];
+            });
+        }
+
+
+        // ==========================================================
+        // ORDER MANAGEMENT FUNCTIONS (NEW)
+        // ==========================================================
+
+        window.getOrdersCollection = () => collection(db, `artifacts/${appId}/public/data/orders`);
+
+        function loadOrders() {
+            const ordersList = document.getElementById('ordersList');
+            const ordersRef = window.getOrdersCollection();
+
+            onSnapshot(query(ordersRef), (snapshot) => {
+                ordersList.innerHTML = '';
+                if (snapshot.empty) {
+                    ordersList.innerHTML = `<p class="text-gray-500 py-4">No orders have been placed yet.</p>`;
+                    return;
+                }
+
+                snapshot.forEach(docSnap => {
+                    const order = docSnap.data();
+                    const orderId = docSnap.id;
+                    const date = new Date(order.createdAt).toLocaleString();
+                    
+                    const statusClass = order.status.toLowerCase().replace(/[^a-z0-9]/g, '');
+
+                    // Basic Order Card Structure
+                    ordersList.innerHTML += `
+                        <div class="bg-white border rounded-lg shadow-sm overflow-hidden">
+                            <div class="card-header flex justify-between items-center p-4 border-b ${order.status.includes('Paid') ? 'bg-green-50' : 'bg-gray-50'}" onclick="toggleOrderDetails('${orderId}')">
+                                <div class="font-semibold text-gray-800">Order ID: <span class="text-orange-600 font-mono">${orderId.substring(0, 8)}...</span></div>
+                                <div class="text-sm font-medium text-center">
+                                    <span class="px-2 py-1 text-xs rounded-full order-status-${statusClass}">${order.status}</span>
+                                </div>
+                                <div>₹${order.totalAmount.toFixed(2)}</div>
+                                <i data-lucide="chevron-down" id="icon-${orderId}" class="w-5 h-5 text-gray-500 transition-transform"></i>
+                            </div>
+                            
+                            <!-- Details Section (Hidden by default) -->
+                            <div id="details-${orderId}" class="p-4 bg-white hidden">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm mb-4">
+                                    <div>
+                                        <p class="font-semibold text-gray-700">Customer Info:</p>
+                                        <p>Name: ${escapeHtml(order.customerName)}</p>
+                                        <p>Email: ${escapeHtml(order.customerEmail)}</p>
+                                        <p>Contact: ${escapeHtml(order.shipping.contact)}</p>
+                                    </div>
+                                    <div>
+                                        <p class="font-semibold text-gray-700">Shipping Address:</p>
+                                        <p>${escapeHtml(order.shipping.address1)}, ${escapeHtml(order.shipping.address2)}</p>
+                                        <p>${escapeHtml(order.shipping.city)} - ${escapeHtml(order.shipping.zip)}</p>
+                                        <p>Order Date: ${date}</p>
+                                    </div>
+                                </div>
+                                
+                                <p class="font-semibold text-gray-700 mb-2 border-t pt-2">Items:</p>
+                                <ul class="space-y-1 text-sm list-disc list-inside">
+                                    ${order.items.map(item => `<li>${item.quantity} x ${escapeHtml(item.name)} (₹${item.price.toFixed(2)})</li>`).join('')}
+                                </ul>
+                                
+                                <div class="mt-4 flex justify-end space-x-2 border-t pt-4">
+                                    <select onchange="updateOrderStatus('${orderId}', this.value)" class="p-2 border rounded-lg text-sm bg-gray-50">
+                                        <option value="Paid - Processing" ${order.status === 'Paid - Processing' ? 'selected' : ''}>Processing</option>
+                                        <option value="Shipped" ${order.status === 'Shipped' ? 'selected' : ''}>Shipped</option>
+                                        <option value="Delivered" ${order.status === 'Delivered' ? 'selected' : ''}>Delivered</option>
+                                        <option value="Cancelled" ${order.status === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                lucide.createIcons();
+            }, (error) => {
+                console.error("Error loading orders:", error);
+                ordersList.innerHTML = `<p class="text-red-500 py-4">Error loading orders. Check your Firestore Security Rules.</p>`;
+            });
+        }
+
+        window.toggleOrderDetails = (orderId) => {
+            const details = document.getElementById(`details-${orderId}`);
+            const icon = document.getElementById(`icon-${orderId}`);
+            if (details.classList.contains('hidden')) {
+                details.classList.remove('hidden');
+                icon.classList.add('rotate-180');
+            } else {
+                details.classList.add('hidden');
+                icon.classList.remove('rotate-180');
+            }
+        };
+
+        window.updateOrderStatus = async (orderId, newStatus) => {
+            if (!currentUserId) return;
+            const orderRef = doc(window.getOrdersCollection(), orderId);
+            try {
+                await updateDoc(orderRef, { status: newStatus });
+                console.log(`Order ${orderId} status updated to ${newStatus}`);
+                showModal("Status Updated", `Order **${orderId.substring(0, 8)}...** status set to **${newStatus}**.`);
+            } catch (error) {
+                console.error("Error updating order status:", error);
+                showModal("Error", "Failed to update order status.");
+            }
+        };
+
+        // Initialize with default tab
+        document.addEventListener('DOMContentLoaded', () => {
+            showTab('products');
+            lucide.createIcons();
+        });
+    </script>
+</body>
+</html>

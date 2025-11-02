@@ -1,0 +1,74 @@
+[debug] [2025-11-02T04:25:04.525Z] ----------------------------------------------------------------------
+[debug] [2025-11-02T04:25:04.531Z] Command:       /Users/amanraj/.nvm/versions/node/v20.19.5/bin/node /opt/homebrew/bin/firebase init
+[debug] [2025-11-02T04:25:04.532Z] CLI Version:   13.31.1
+[debug] [2025-11-02T04:25:04.532Z] Platform:      darwin
+[debug] [2025-11-02T04:25:04.532Z] Node Version:  v20.19.5
+[debug] [2025-11-02T04:25:04.532Z] Time:          Sun Nov 02 2025 09:55:04 GMT+0530 (India Standard Time)
+[debug] [2025-11-02T04:25:04.532Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2025-11-02T04:25:04.535Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-11-02T04:25:04.535Z] > authorizing via signed-in user (aman.r65@gmail.com)
+[info] 
+     ######## #### ########  ######## ########     ###     ######  ########
+     ##        ##  ##     ## ##       ##     ##  ##   ##  ##       ##
+     ######    ##  ########  ######   ########  #########  ######  ######
+     ##        ##  ##    ##  ##       ##     ## ##     ##       ## ##
+     ##       #### ##     ## ######## ########  ##     ##  ######  ########
+
+You're about to initialize a Firebase project in this directory:
+
+  /Users/amanraj/Documents/kaju-kart
+
+[info] 
+=== Project Setup
+[info] 
+[info] First, let's associate this project directory with a Firebase project.
+[info] You can create multiple project aliases by running firebase use --add, 
+[info] but for now we'll just set up a default project.
+[info] 
+[debug] [2025-11-02T04:25:49.745Z] Checked if tokens are valid: false, expires at: 1762054918686
+[debug] [2025-11-02T04:25:49.750Z] Checked if tokens are valid: false, expires at: 1762054918686
+[debug] [2025-11-02T04:25:49.751Z] > refreshing access token with scopes: []
+[debug] [2025-11-02T04:25:49.757Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2025-11-02T04:25:49.758Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2025-11-02T04:25:50.133Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2025-11-02T04:25:50.133Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2025-11-02T04:25:50.145Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects pageSize=100
+[debug] [2025-11-02T04:25:50.927Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects 200
+[debug] [2025-11-02T04:25:50.927Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects [omitted]
+[info] i  Using project kaju-kart-5617d (kaju-kart) 
+[info] 
+=== Hosting Setup
+[debug] [2025-11-02T04:25:52.876Z] Checked if tokens are valid: true, expires at: 1762061149133
+[debug] [2025-11-02T04:25:52.877Z] Checked if tokens are valid: true, expires at: 1762061149133
+[debug] [2025-11-02T04:25:52.877Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/kaju-kart-5617d [none]
+[debug] [2025-11-02T04:25:53.297Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/kaju-kart-5617d 200
+[debug] [2025-11-02T04:25:53.297Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/kaju-kart-5617d {"projectId":"kaju-kart-5617d","projectNumber":"353406818531","displayName":"kaju-kart","name":"projects/kaju-kart-5617d","resources":{"hostingSite":"kaju-kart-5617d"},"state":"ACTIVE","etag":"1_51be0753-8cc0-4481-867e-4767eaad95a0"}
+[info] 
+[info] Your public directory is the folder (relative to your project directory) that
+[info] will contain Hosting assets to be uploaded with firebase deploy. If you
+[info] have a build process for your assets, use your build's output directory.
+[info] 
+[info] ✔  Wrote public/404.html 
+[debug] [2025-11-02T04:26:20.834Z] >>> [apiv2][query] GET https://www.gstatic.com/firebasejs/releases.json [none]
+[debug] [2025-11-02T04:26:21.027Z] <<< [apiv2][status] GET https://www.gstatic.com/firebasejs/releases.json 200
+[debug] [2025-11-02T04:26:21.028Z] <<< [apiv2][body] GET https://www.gstatic.com/firebasejs/releases.json {"current":{"version":"12.5.0","browserURL":"https://www.gstatic.com/firebasejs/12.5.0/firebase.js","packageURL":"https://www.gstatic.com/firebasejs/12.5.0/firebase.tgz"},"live":{"version":"12.5","browserURL":"https://www.gstatic.com/firebasejs/live/12.5/firebase.js","packageURL":"https://www.gstatic.com/firebasejs/live/12.5/firebase.tgz"},"components":{"ai":"https://www.gstatic.com/firebasejs/12.5.0/firebase-ai.js","analytics":"https://www.gstatic.com/firebasejs/12.5.0/firebase-analytics.js","app":"https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js","app-check":"https://www.gstatic.com/firebasejs/12.5.0/firebase-app-check.js","auth":"https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js","auth/cordova":"https://www.gstatic.com/firebasejs/12.5.0/firebase-auth/cordova.js","auth/web-extension":"https://www.gstatic.com/firebasejs/12.5.0/firebase-auth/web-extension.js","functions":"https://www.gstatic.com/firebasejs/12.5.0/firebase-functions.js","firestore":"https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js","firestore/lite":"https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore/lite.js","installations":"https://www.gstatic.com/firebasejs/12.5.0/firebase-installations.js","storage":"https://www.gstatic.com/firebasejs/12.5.0/firebase-storage.js","performance":"https://www.gstatic.com/firebasejs/12.5.0/firebase-performance.js","remote-config":"https://www.gstatic.com/firebasejs/12.5.0/firebase-remote-config.js","messaging":"https://www.gstatic.com/firebasejs/12.5.0/firebase-messaging.js","messaging/sw":"https://www.gstatic.com/firebasejs/12.5.0/firebase-messaging/sw.js","database":"https://www.gstatic.com/firebasejs/12.5.0/firebase-database.js","data-connect":"https://www.gstatic.com/firebasejs/12.5.0/firebase-data-connect.js","firestore.memory":"https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.memory.js"}}
+[info] ✔  Wrote public/index.html 
+[info] 
+[info] i  Detected a .git folder at /Users/amanraj 
+[info] i  Authorizing with GitHub to upload your service account to a GitHub repository's secrets store. 
+[info] 
+[info] Visit this URL on this device to log in:
+[info] https://github.com/login/oauth/authorize?client_id=89cf50f02ac6aaed3484&state=481331002&redirect_uri=http%3A%2F%2Flocalhost%3A9005&scope=read%3Auser%20repo%20public_repo
+[info] 
+[info] Waiting for authentication...
+[debug] [2025-11-02T04:26:48.164Z] >>> [apiv2][query] POST https://github.com/login/oauth/access_token [none]
+[debug] [2025-11-02T04:26:48.167Z] >>> [apiv2][body] POST https://github.com/login/oauth/access_token [stream]
+[debug] [2025-11-02T04:26:48.664Z] <<< [apiv2][status] POST https://github.com/login/oauth/access_token 200
+[debug] [2025-11-02T04:26:48.664Z] <<< [apiv2][body] POST https://github.com/login/oauth/access_token {"access_token":"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","token_type":"bearer","scope":"read:user,repo"}
+[debug] [2025-11-02T04:26:48.690Z] >>> [apiv2][query] GET https://api.github.com/user [none]
+[debug] [2025-11-02T04:26:49.229Z] <<< [apiv2][status] GET https://api.github.com/user 200
+[debug] [2025-11-02T04:26:49.230Z] <<< [apiv2][body] GET https://api.github.com/user {"login":"amanraj65","id":176262602,"node_id":"U_kgDOCoGNyg","avatar_url":"https://avatars.githubusercontent.com/u/176262602?v=4","gravatar_id":"","url":"https://api.github.com/users/amanraj65","html_url":"https://github.com/amanraj65","followers_url":"https://api.github.com/users/amanraj65/followers","following_url":"https://api.github.com/users/amanraj65/following{/other_user}","gists_url":"https://api.github.com/users/amanraj65/gists{/gist_id}","starred_url":"https://api.github.com/users/amanraj65/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/amanraj65/subscriptions","organizations_url":"https://api.github.com/users/amanraj65/orgs","repos_url":"https://api.github.com/users/amanraj65/repos","events_url":"https://api.github.com/users/amanraj65/events{/privacy}","received_events_url":"https://api.github.com/users/amanraj65/received_events","type":"User","user_view_type":"private","site_admin":false,"name":null,"company":null,"blog":"","location":null,"email":null,"hireable":null,"bio":null,"twitter_username":null,"notification_email":null,"public_repos":19,"public_gists":0,"followers":0,"following":0,"created_at":"2024-07-22T03:41:56Z","updated_at":"2025-10-31T07:24:36Z","private_gists":0,"total_private_repos":0,"owned_private_repos":0,"disk_usage":418855,"collaborators":0,"two_factor_authentication":false,"plan":{"name":"free","space":976562499,"collaborators":0,"private_repos":10000}}
+[info] 
+[info] ✔  Success! Logged into GitHub as amanraj65 
+[info] 
